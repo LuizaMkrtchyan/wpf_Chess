@@ -1,0 +1,27 @@
+﻿<Window x:Class="wpf_Chess_homework.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:wpf_Chess_homework"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="438" Width="410"
+        MouseMove="Window_MouseMove">
+    <Grid>
+        <Image Name="MyBoard" Source="board.jpg" Stretch="Fill"/>
+        <Image Name="MyBkFigure" Source="bk.gif" Margin="200,0,0,0" VerticalAlignment="Top" 
+               HorizontalAlignment="Left" Width="50" Height="50"/>
+        <Image Name="MyBnFigure" Source="bn.gif" Margin="300,0,0,0" VerticalAlignment="Top"
+ HorizontalAlignment="Left" Width="50" Height="50"/>
+        <Image Name="MyBrFigure" Source="br.gif" Margin="350,0,0,0" VerticalAlignment="Top"
+               HorizontalAlignment="Left" Width="50" Height="50"/>
+        <Image Name="MyBbFigure" Source="bb.gif" Margin="250,0,0,0"
+ VerticalAlignment="Top" HorizontalAlignment="Left" Width="50" Height="50" Cursor="Hand"/>
+
+        <Image Name="MyWpFigure" Source="wp.gif" Margin="200,300,0,0" VerticalAlignment="Top" 
+               HorizontalAlignment="Left" Width="50" Height="50" MouseDown="MyWpFigure_MouseDown" MouseUp="MyWpFigure_MouseUp"/>
+        <Image Name="MyWkFigure" Source="wk.gif" Margin="200,350,0,0" VerticalAlignment="Top"
+               HorizontalAlignment="Left" Width="50" Height="50" MouseDown="MyWkFigure_MouseDown" MouseUp="MyWkFigure_MouseUp"/>
+        <Grid Name="ramka"></Grid>
+    </Grid>
+</Window>
