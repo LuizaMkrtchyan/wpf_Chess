@@ -1,25 +1,280 @@
-﻿
-Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.33801.447
-MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "wpf_Chess_homework", "wpf_Chess_homework\wpf_Chess_homework.csproj", "{837732E9-47CE-4E0C-BA53-DDDAE0D321DC}"
-EndProject
-Global
-	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		Debug|Any CPU = Debug|Any CPU
-		Release|Any CPU = Release|Any CPU
-	EndGlobalSection
-	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{837732E9-47CE-4E0C-BA53-DDDAE0D321DC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{837732E9-47CE-4E0C-BA53-DDDAE0D321DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{837732E9-47CE-4E0C-BA53-DDDAE0D321DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{837732E9-47CE-4E0C-BA53-DDDAE0D321DC}.Release|Any CPU.Build.0 = Release|Any CPU
-	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {8FBF692D-ECC5-4088-B9A8-DE1C9A01C70D}
-	EndGlobalSection
-EndGlobal
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
+using System.Windows.Shapes;
+
+namespace wpf_Chess_homework
+{
+    public partial class MainWindow : Window
+    {
+        bool  WpFigureClicked, WkFigureClicked;
+        double DeltaX, DeltaY;
+        double X, Y;
+        bool blackMoved = false;
+        Random random = new Random();
+        double old_x_pawn, old_y_pawn, old_x_king, old_y_king;
+
+        public MainWindow()
+        {
+            InitializeComponent();
+        }
+        void Window_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (WpFigureClicked)
+                MyWpFigure.Margin = new Thickness(e.GetPosition(this).X - DeltaX,
+                e.GetPosition(this).Y - DeltaY,0,0);
+            if (WkFigureClicked)
+                MyWkFigure.Margin = new Thickness(e.GetPosition(this).X - DeltaX,
+                e.GetPosition(this).Y - DeltaY, 0, 0);
+        }
+        void BlackMove(MouseEventArgs e)
+        {
+            Image[] Blacks = { MyBnFigure, MyBkFigure, MyBrFigure, MyBbFigure };
+            int ind = random.Next(0, Blacks.Length);
+            Image blackFig = Blacks[ind];
+            if (!Mat())
+            {
+                if (!Shax())
+                {
+                    if (blackFig == MyBnFigure) MyBnFigureMove();
+                    else if (blackFig == MyBkFigure) MyBkFigureMove();
+                    else if (blackFig == MyBrFigure) MyBrFigureMove();
+                    else MyBbFigureMove();
+                }
+            }
+
+        }
+
+        bool Shax()
+        {
+            bool done = false;
+            double King_l = MyWkFigure.Margin.Left;
+            double King_t = MyWkFigure.Margin.Top;
+            //nav
+            double x = MyBrFigure.Margin.Left;
+            double y = MyBrFigure.Margin.Top;
+            //pix
+            double x_pix = MyBbFigure.Margin.Left;
+            double y_pix = MyBbFigure.Margin.Top;
+            //dzi
+            double x_dzi = MyBnFigure.Margin.Left;
+            double y_dzi = MyBnFigure.Margin.Top;
+            for (int i = 0; i <= 350; i+=50)
+            {
+                for (int j = 0; j <= 350; j+=50)
+                {
+                    //navn e pordzum shax tal
+                    if ((i == x || j == y) && (i != x || j != y)&& !done)
+                    {
+                        if ((King_l == i || King_t == j) && (King_l != i || King_t != j))
+                        {
+                            MyBrFigure.Margin = new Thickness(i, j, 0, 0);
+                            done = true;
+                            break;
+                        }
+                        if (done) break;
+                    }
+                    //pixn e pordzum shax tal
+                    if (((i - j) == (x_pix - y_pix) || (i + j) == (x_pix + y_pix)) && i != x_pix && j != y_pix && !done)
+                    {
+                        if (((King_l - King_t) == (i - j) || (King_l + King_t) == (i + j)) && King_l != i && King_t != j)
+                        {
+                            MyBbFigure.Margin = new Thickness(i, j, 0, 0);
+                            done = true;
+                            break;
+                        }
+                        if (done) break;
+                    }
+                    //dzin e pordzum shax tal
+                    if (((i == x_dzi - 100 || i == x_dzi + 100) && (j == y_dzi + 50 || j == y_dzi - 50)) || ((i == x_dzi - 50 || i == x_dzi + 50) && (j == y_dzi - 100 || j == y_dzi + 100)) && (j != x_dzi && i != y_dzi)&& !done)
+                    {
+                        if (((King_l == i - 100 || King_l == i + 100) && (King_t == j + 50 || King_t == j - 50)) || ((King_l == i - 50 || King_l == i + 50) && (King_t == j - 100 || King_t == j + 100)) && (King_t != i && King_l != j))
+                        {
+                            MyBnFigure.Margin = new Thickness(i, j, 0, 0);
+                            done = true;
+                            break;
+                        }
+                        if (done) break;
+                    }
+                }
+            }
+            return done;
+        }
+        bool Mat()
+        {
+            bool done = false;
+            double King_l = MyWkFigure.Margin.Left;
+            double King_t = MyWkFigure.Margin.Top;
+            //dzin e pordzum
+            double x = MyBnFigure.Margin.Left;
+            double y = MyBnFigure.Margin.Top;
+            if (((King_l == x - 100 || King_l == x + 100) && (King_t == y + 50 || King_t == y - 50)) || ((King_l == x - 50 || King_l == x + 50) && (King_t == y - 100 || King_t == y + 100)) && (King_t != x && King_l != y))
+            {
+                MyBnFigure.Margin = new Thickness(King_l, King_t, 0, 0);
+                done = true;
+            }
+            //navn e pordzum
+            x = MyBrFigure.Margin.Left;
+            y = MyBrFigure.Margin.Top;
+            if ((King_l == x || King_t == y) && (King_l != x || King_t != y)&&!done)
+            {
+                MyBrFigure.Margin = new Thickness(King_l, King_t, 0, 0);
+                done = true;
+            }
+            //pixn e pordzum 
+            x = MyBbFigure.Margin.Left;
+            y = MyBbFigure.Margin.Top;
+            if (((King_l - King_t) == (x - y) || (King_l + King_t) == (x + y)) && King_l != x && King_t != y && !done)
+            {
+                MyBbFigure.Margin = new Thickness(King_l, King_t, 0, 0);
+                done = true;
+            }
+            return done;
+        }
+        void MyBnFigureMove()
+        {
+            blackMoved = false;
+            double x = MyBnFigure.Margin.Left;
+            double y = MyBnFigure.Margin.Top;
+            do
+            {
+                int l = 50 * random.Next(0, 7);
+                int t = 50 * random.Next(0, 7);
+
+                if (((l==x-100 || l==x+100)&&(t==y+50 || t==y-50))||((l==x-50 || l==x+50)&&(t==y-100 || t==y+100))&&(t!=x && l!=y))
+                {
+                    MyBnFigure.Margin = new Thickness(l, t, 0, 0);
+                    blackMoved = true;
+                }
+            } while (blackMoved == false);
+        }
+        void MyBkFigureMove()
+        {
+            blackMoved = false;
+            double x = MyBkFigure.Margin.Left;
+            double y = MyBkFigure.Margin.Top;
+            do
+            {
+                int l = 50 * random.Next(0, 7);
+                int t = 50 * random.Next(0, 7);
+
+                if ((l==x+50 || l==x-50)&&(t==y+50 || t==y-50))
+                {
+                    MyBkFigure.Margin = new Thickness(l, t, 0, 0);
+                    blackMoved = true;
+                }
+            } while (blackMoved == false);
+        }
+        void MyBrFigureMove()
+        {
+            blackMoved = false;
+            double x = MyBrFigure.Margin.Left;
+            double y = MyBrFigure.Margin.Top;
+            do
+            {
+                int l = 50 * random.Next(0, 7);
+                int t = 50 * random.Next(0, 7);
+
+                if ((l == x || t == y) && (l != x || t != y))
+                {
+                    MyBrFigure.Margin = new Thickness(l, t, 0, 0);
+                    blackMoved = true;
+                }
+            } while (blackMoved == false);
+        }
+        void MyBbFigureMove()
+        {
+            blackMoved = false;
+            double x = MyBbFigure.Margin.Left;
+            double y = MyBbFigure.Margin.Top;
+            do
+            {
+                int l = 50 * random.Next(0, 7);
+                int t = 50 * random.Next(0, 7);
+
+                if (((l - t) == (x - y) || (l + t) == (x + y)) && l != x && t != y)
+                {
+                    MyBbFigure.Margin = new Thickness(l, t, 0, 0);
+                    blackMoved = true;
+                }
+            } while (blackMoved == false);
+        }
+
+
+        void MyWpFigure_MouseDown(object sender, MouseEventArgs e)
+        {
+            old_x_pawn = (int)e.GetPosition(this).X;
+            old_y_pawn = (int)e.GetPosition(this).Y;
+            if (e.LeftButton == e.LeftButton)
+            {
+                StackPanel.SetZIndex(MyWpFigure, 1);
+                WpFigureClicked = true;
+                DeltaX = e.GetPosition(this).X - MyWpFigure.Margin.Left;
+                DeltaY = e.GetPosition(this).Y - MyWpFigure.Margin.Top;
+            }
+        }
+
+        void MyWpFigure_MouseUp(object sender, MouseEventArgs e)
+        {
+            WpFigureClicked = false;
+            double newX = (int)(e.GetPosition(this).X + DeltaX - 25) / 50 * 50;
+            double newY = (int)(e.GetPosition(this).Y + DeltaY - 25) / 50 * 50;
+
+            if (newX==(int)old_x_pawn/50*50 && newY<=old_y_pawn-50)
+            {
+                MyWpFigure.Margin = new Thickness(newX, newY, 0, 0);
+                ramka.Children.Clear();
+                BlackMove(e);
+            }
+            else
+            {
+                MyWpFigure.Margin = new Thickness((int)old_x_pawn/50*50, (int)old_y_pawn/50*50, 0, 0);
+                ramka.Children.Clear();
+            }
+
+        }
+
+        void MyWkFigure_MouseDown(object sender, MouseEventArgs e)
+        {
+            old_x_king = (int)e.GetPosition(this).X/50*50;
+            old_y_king = (int)e.GetPosition(this).Y/50*50;
+            if (e.LeftButton == e.LeftButton)
+            {
+                StackPanel.SetZIndex(MyWkFigure, 1);
+                DeltaX = e.GetPosition(this).X - MyWkFigure.Margin.Left;
+                DeltaY = e.GetPosition(this).Y - MyWkFigure.Margin.Top;
+                WkFigureClicked = true;
+            }
+        }
+
+        void MyWkFigure_MouseUp(object sender, MouseEventArgs e)
+        {
+            WkFigureClicked = false;
+            double newX = (int)(e.GetPosition(this).X + DeltaX - 25) / 50 * 50;
+            double newY = (int)(e.GetPosition(this).Y + DeltaY - 25) / 50 * 50;
+
+            if (Math.Abs(newX-old_x_king)<=50 && Math.Abs(newY-old_y_king)<=50)
+            {
+                MyWkFigure.Margin = new Thickness(newX, newY, 0, 0);
+                ramka.Children.Clear();
+                BlackMove(e);
+            }
+            else
+            {
+                MyWkFigure.Margin = new Thickness((int)old_x_king / 50 * 50, (int)old_y_king / 50 * 50, 0, 0);
+                ramka.Children.Clear();
+            }
+        }
+
+    }
+}
